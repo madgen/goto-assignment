@@ -16,11 +16,13 @@ type Env id = (DefsInEffect id, GoToDef id)
 
 data Mode = First
           | Last
+          | SSA
   deriving Read
 
 goToDef :: Ord id => Mode -> Program id -> GoToDef id
 goToDef First = goToDefSimple (\_ y -> y) const
 goToDef Last = goToDefSimple const (\_ y -> y)
+goToDef SSA = goToDefSimple const S.union
 
 goToDefSimple :: forall id.
               Ord id
