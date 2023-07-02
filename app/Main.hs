@@ -27,7 +27,7 @@ main = do
       !contents <- readProgramSTDIN
       putStrLn "\n\nPretty printed parse tree:"
       putStrLn $ pp $ number $ parse $ lex contents
-    ["go-to-first-def"] -> do
+    ["go-to-def", mode] -> do
       !contents <- readProgramSTDIN
       putStrLn "\n\nPretty printed parse tree:"
       let ast = number $ parse $ lex contents
@@ -35,7 +35,7 @@ main = do
       putStrLn "\n\nGo-to-def (first) table:"
       traverse_ (\(id1, id2) -> putStrLn $ show id1 <> " -> " <> show id2)
         $ GoToDef.tabulate
-        $ GoToDef.goToFirstDef ast
+        $ GoToDef.goToDef (read mode) ast
     _ -> error "dunno what's happening"
 
 readProgramSTDIN :: IO String
