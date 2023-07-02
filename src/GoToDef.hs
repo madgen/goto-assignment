@@ -3,12 +3,14 @@
 module GoToDef (Mode(..), goToDef, tabulate) where
 
 import qualified Data.Map.Strict as M
+import qualified Data.Set as S
 import           AST
 import           Prelude hiding (id)
+import           Control.Arrow (second)
 
-type GoToDef id = M.Map id [id]
+type GoToDef id = M.Map id (S.Set id)
 
-type LastOcc id = M.Map String [id]
+type LastOcc id = M.Map String (S.Set id)
 
 type Env id = (LastOcc id, GoToDef id)
 
@@ -20,8 +22,11 @@ goToDef :: Ord id => Mode -> Program id -> GoToDef id
 goToDef First = goToDefSimple (\_ y -> y)
 goToDef Last = goToDefSimple const
 
-goToDefSimple
-  :: forall id. Ord id => ([id] -> [id] -> [id]) -> Program id -> GoToDef id
+goToDefSimple :: forall id.
+              Ord id
+              => (S.Set id -> S.Set id -> S.Set id)
+              -> Program id
+              -> GoToDef id
 goToDefSimple choose pr = snd $ goBlock (M.empty, M.empty) pr
   where
     goBlock :: Env id -> Program id -> Env id
@@ -31,7 +36,7 @@ goToDefSimple choose pr = snd $ goBlock (M.empty, M.empty) pr
     goSt env@(lastDef, _) (Assignment var@(Variable id str) expr) =
       (lastDef', goToDefTbl')
       where
-        lastDef' = M.insertWith choose str [id] lastDef
+        lastDef' = M.insertWith choose str (S.singleton id) lastDef
 
         env' = (lastDef', goExpr env expr)
 
@@ -56,4 +61,4 @@ goToDefSimple choose pr = snd $ goBlock (M.empty, M.empty) pr
       maybe goToDefTbl (\v -> M.insert id v goToDefTbl) (M.lookup str lastDef)
 
 tabulate :: GoToDef id -> [(id, [id])]
-tabulate = M.assocs
+tabulate = map (second S.toAscList) . M.assocs
