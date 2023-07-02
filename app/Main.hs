@@ -1,5 +1,3 @@
-{-# LANGUAGE BangPatterns #-}
-
 module Main (main) where
 
 import           Prelude hiding (lex)
@@ -10,25 +8,26 @@ import           Parser (parse)
 import           Number (number)
 import           System.Environment (getArgs)
 import qualified GoToDef
+import qualified System.IO.Strict as SIO
 
 main :: IO ()
 main = do
   args <- getArgs
   case args of
     ["lex"] -> do
-      !contents <- readProgramSTDIN
+      contents <- readProgramSTDIN
       putStrLn "\n\nTokens:"
       print $ lex contents
     ["parse"] -> do
-      !contents <- readProgramSTDIN
+      contents <- readProgramSTDIN
       putStrLn "\n\nPretty printed parse tree:"
       putStrLn $ pp $ parse $ lex contents
     ["number"] -> do
-      !contents <- readProgramSTDIN
+      contents <- readProgramSTDIN
       putStrLn "\n\nPretty printed parse tree:"
       putStrLn $ pp $ number $ parse $ lex contents
     ["go-to-def", mode] -> do
-      !contents <- readProgramSTDIN
+      contents <- readProgramSTDIN
       putStrLn "\n\nPretty printed parse tree:"
       let ast = number $ parse $ lex contents
       putStrLn $ pp ast
@@ -40,6 +39,5 @@ main = do
 
 readProgramSTDIN :: IO String
 readProgramSTDIN = do
-  putStrLn ""
   putStrLn "Reading input..."
-  getContents
+  SIO.getContents
