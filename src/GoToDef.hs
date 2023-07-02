@@ -19,16 +19,23 @@ data Mode = First
   deriving Read
 
 goToDef :: Ord id => Mode -> Program id -> GoToDef id
-goToDef First = goToDefSimple (\_ y -> y)
-goToDef Last = goToDefSimple const
+goToDef First = goToDefSimple (\_ y -> y) const
+goToDef Last = goToDefSimple const (\_ y -> y)
 
 goToDefSimple :: forall id.
               Ord id
               => (S.Set id -> S.Set id -> S.Set id)
+              -> (S.Set id -> S.Set id -> S.Set id)
               -> Program id
               -> GoToDef id
-goToDefSimple choose pr = snd $ goBlock (M.empty, M.empty) pr
+goToDefSimple choose union pr = snd $ goBlock (M.empty, M.empty) pr
   where
+    chooseDef :: String -> S.Set id -> DefsInEffect id -> DefsInEffect id
+    chooseDef = M.insertWith choose
+
+    unionDef :: DefsInEffect id -> DefsInEffect id -> DefsInEffect id
+    unionDef = M.unionWith union
+
     goBlock :: Env id -> Program id -> Env id
     goBlock = foldl goSt
 
@@ -36,13 +43,13 @@ goToDefSimple choose pr = snd $ goBlock (M.empty, M.empty) pr
     goSt env@(defsInEffect, _) (Assignment var@(Variable id str) expr) =
       (defsInEffect', goToDefTbl')
       where
-        defsInEffect' = M.insertWith choose str (S.singleton id) defsInEffect
+        defsInEffect' = chooseDef str (S.singleton id) defsInEffect
 
         env' = (defsInEffect', goExpr env expr)
 
         goToDefTbl' = goVar env' var
     goSt env@(defsInEffect, _) (Ite e th el) =
-      (M.unionWith choose defsInEffectEl defsInEffectTh, goToDefTbl'')
+      (unionDef defsInEffectTh defsInEffectEl, goToDefTbl'')
       where
         goToDefTbl = goExpr env e
 
@@ -50,7 +57,9 @@ goToDefSimple choose pr = snd $ goBlock (M.empty, M.empty) pr
 
         (defsInEffectEl, goToDefTbl'') = goBlock (defsInEffect, goToDefTbl') el
     goSt env@(defsInEffect, _) (While e body) =
-      goBlock (defsInEffect, goExpr env e) body
+      (unionDef defsInEffect defsInEffect', goToDefTbl)
+      where
+        (defsInEffect', goToDefTbl) = goBlock (defsInEffect, goExpr env e) body
 
     goExpr :: Env id -> Expression id -> GoToDef id
     goExpr (_, goToDefTbl) EConst {} = goToDefTbl
