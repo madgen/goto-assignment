@@ -6,7 +6,7 @@ import qualified Data.Map.Strict as M
 import           AST
 import           Prelude hiding (id)
 
-type GoToDef id = M.Map id id
+type GoToDef id = M.Map id [ id ]
 
 type Env id = (M.Map String id, GoToDef id)
 
@@ -42,7 +42,7 @@ goToFirstDef pr = snd $ goBlock (M.empty, M.empty) pr
     goExpr env@(lastOcc, _) (EPlus e1 e2) = goExpr (lastOcc, goExpr env e1) e2
 
     goVar (lastOcc, goToDef) (Variable id str) =
-      maybe goToDef (\v -> M.insert id v goToDef) (M.lookup str lastOcc)
-
-tabulate :: GoToDef id -> [(id, id)]
+      maybe goToDef (\v -> M.insert id [ v ] goToDef) (M.lookup str lastOcc)
+      
+tabulate :: GoToDef id -> [(id, [ id ])]
 tabulate = M.assocs
