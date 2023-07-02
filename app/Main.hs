@@ -32,7 +32,7 @@ main = do
       putStrLn "\n\nPretty printed parse tree:"
       let ast = number $ parse $ lex contents
       putStrLn $ pp ast
-      putStrLn "\n\nGo-to-def (first) table:"
+      putStrLn $ "\n\nGo-to-def (" <> mode <> ") table:"
       traverse_ (\(id1, id2) -> putStrLn $ show id1 <> " -> " <> show id2)
         $ GoToDef.tabulate
         $ GoToDef.goToDef (read mode) ast
