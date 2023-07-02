@@ -10,9 +10,9 @@ import           Control.Arrow (second)
 
 type GoToDef id = M.Map id (S.Set id)
 
-type LastOcc id = M.Map String (S.Set id)
+type DefsInEffect id = M.Map String (S.Set id)
 
-type Env id = (LastOcc id, GoToDef id)
+type Env id = (DefsInEffect id, GoToDef id)
 
 data Mode = First
           | Last
@@ -33,32 +33,36 @@ goToDefSimple choose pr = snd $ goBlock (M.empty, M.empty) pr
     goBlock = foldl goSt
 
     goSt :: Env id -> Statement id -> Env id
-    goSt env@(lastDef, _) (Assignment var@(Variable id str) expr) =
-      (lastDef', goToDefTbl')
+    goSt env@(defsInEffect, _) (Assignment var@(Variable id str) expr) =
+      (defsInEffect', goToDefTbl')
       where
-        lastDef' = M.insertWith choose str (S.singleton id) lastDef
+        defsInEffect' = M.insertWith choose str (S.singleton id) defsInEffect
 
-        env' = (lastDef', goExpr env expr)
+        env' = (defsInEffect', goExpr env expr)
 
         goToDefTbl' = goVar env' var
-    goSt env@(lastDef, _) (Ite e th el) =
-      (M.unionWith choose lastDefEl lastDefTh, goToDefTbl'')
+    goSt env@(defsInEffect, _) (Ite e th el) =
+      (M.unionWith choose defsInEffectEl defsInEffectTh, goToDefTbl'')
       where
         goToDefTbl = goExpr env e
 
-        (lastDefTh, goToDefTbl') = goBlock (lastDef, goToDefTbl) th
+        (defsInEffectTh, goToDefTbl') = goBlock (defsInEffect, goToDefTbl) th
 
-        (lastDefEl, goToDefTbl'') = goBlock (lastDef, goToDefTbl') el
-    goSt env@(lastDef, _) (While e body) = goBlock (lastDef, goExpr env e) body
+        (defsInEffectEl, goToDefTbl'') = goBlock (defsInEffect, goToDefTbl') el
+    goSt env@(defsInEffect, _) (While e body) =
+      goBlock (defsInEffect, goExpr env e) body
 
     goExpr :: Env id -> Expression id -> GoToDef id
     goExpr (_, goToDefTbl) EConst {} = goToDefTbl
     goExpr env (EVar var) = goVar env var
-    goExpr env@(lastDef, _) (EPlus e1 e2) = goExpr (lastDef, goExpr env e1) e2
+    goExpr env@(defsInEffect, _) (EPlus e1 e2) =
+      goExpr (defsInEffect, goExpr env e1) e2
 
     goVar :: Env id -> Variable id -> GoToDef id
-    goVar (lastDef, goToDefTbl) (Variable id str) =
-      maybe goToDefTbl (\v -> M.insert id v goToDefTbl) (M.lookup str lastDef)
+    goVar (defsInEffect, goToDefTbl) (Variable id str) = maybe
+      goToDefTbl
+      (\v -> M.insert id v goToDefTbl)
+      (M.lookup str defsInEffect)
 
 tabulate :: GoToDef id -> [(id, [id])]
 tabulate = map (second S.toAscList) . M.assocs
