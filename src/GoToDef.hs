@@ -41,11 +41,10 @@ goToDefSimple choose pr = snd $ goBlock (M.empty, M.empty) pr
       where
         goToDefTbl = goExpr env e
 
-        (lastDefTh, goToDefTbl') = foldl goSt (lastDef, goToDefTbl) th
+        (lastDefTh, goToDefTbl') = goBlock (lastDef, goToDefTbl) th
 
-        (lastDefEl, goToDefTbl'') = foldl goSt (lastDef, goToDefTbl') el
-    goSt env@(lastDef, _) (While e body) =
-      foldl goSt (lastDef, goExpr env e) body
+        (lastDefEl, goToDefTbl'') = goBlock (lastDef, goToDefTbl') el
+    goSt env@(lastDef, _) (While e body) = goBlock (lastDef, goExpr env e) body
 
     goExpr :: Env id -> Expression id -> GoToDef id
     goExpr (_, goToDefTbl) EConst {} = goToDefTbl
