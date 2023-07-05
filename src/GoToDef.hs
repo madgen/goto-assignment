@@ -17,7 +17,7 @@ type Env id = (DefsInEffect id, GoToDef id)
 data Mode = First
           | Last
           | SSA
-  deriving Read
+  deriving (Show, Read, Enum, Bounded)
 
 goToDef :: Ord id => Mode -> Program id -> GoToDef id
 goToDef First = goToDefSimple (\_ y -> y) const

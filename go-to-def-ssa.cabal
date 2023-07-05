@@ -78,9 +78,12 @@ test-suite go-to-def-ssa-test
       alex
     , happy
   build-depends:
-      array
+      Diff
+    , array
     , base >=4.7 && <5
     , containers
+    , directory
+    , filepath
     , go-to-def-ssa
     , strict
     , transformers
