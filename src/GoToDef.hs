@@ -58,10 +58,21 @@ goToDefSimple choose union pr = snd $ goBlock (M.empty, M.empty) pr
         (defsInEffectTh, goToDefTbl') = goBlock (defsInEffect, goToDefTbl) th
 
         (defsInEffectEl, goToDefTbl'') = goBlock (defsInEffect, goToDefTbl') el
-    goSt env@(defsInEffect, _) (While e body) =
-      (unionDef defsInEffect defsInEffect', goToDefTbl)
+    goSt env (While e body) = drive env
       where
-        (defsInEffect', goToDefTbl) = goBlock (defsInEffect, goExpr env e) body
+        drive env' = if env' == step env'
+                     then env'
+                     else drive $ step env'
+
+        step env'@(defsInEffect, _) = (defsInEffect'', goToDefTbl')
+          where
+            goToDefTbl = goExpr env' e
+
+            env'' = (defsInEffect, goToDefTbl)
+
+            (defsInEffect', goToDefTbl') = goBlock env'' body
+
+            defsInEffect'' = unionDef defsInEffect defsInEffect'
 
     goExpr :: Env id -> Expression id -> GoToDef id
     goExpr (_, goToDefTbl) EConst {} = goToDefTbl
