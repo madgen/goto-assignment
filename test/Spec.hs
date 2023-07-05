@@ -36,7 +36,7 @@ main = do
                 writeIORef failingRef True
                 putStrLn "Mismatch between expected and actual output."
                 putStrLn $ showTestCase whileFile ast
-                putStrLn "Diff:"
+                putStrLn $ "Diff (Expected at " <> expPath <> "):"
                 let diff =
                       getGroupedDiff (lines expOutput) (lines actualOutput)
                 putStrLn $ ppDiff diff
