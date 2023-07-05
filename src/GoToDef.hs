@@ -20,8 +20,8 @@ data Mode = First
   deriving (Show, Read, Enum, Bounded)
 
 goToDef :: Ord id => Mode -> Program id -> GoToDef id
-goToDef First = goToDefSimple (\_ y -> y) const
-goToDef Last = goToDefSimple const (\_ y -> y)
+goToDef First = goToDefSimple min const
+goToDef Last = goToDefSimple const max
 goToDef SSA = goToDefSimple const S.union
 
 goToDefSimple :: forall id.
