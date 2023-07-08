@@ -27,10 +27,12 @@ library
   exposed-modules:
       AST
       GoToDef
+      Index
       Lexer
       Parser
       PrettyPrinter
       Span
+      Target
   other-modules:
       Paths_go_to_def_ssa
   hs-source-dirs:

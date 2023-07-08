@@ -1,10 +1,11 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE FlexibleInstances #-}
 
-module Span (Span(..), pp, pps) where
+module Span (Span(..), pp, pps, isTargetWithin) where
 
 import           Data.List (intercalate)
 import qualified PrettyPrinter as PP
+import           Target (Target(..))
 
 data Span =
   Span { _offset :: Int, _line :: Int, _column :: Int, _length :: Int }
@@ -16,6 +17,8 @@ endOffset s = _offset s + _length s
 instance Eq Span where
   s1 == s2 = _offset s1 == _offset s2 && _length s1 == _length s2
 
+{- If there is, no containment, the earlier you are the less you are. If there
+ - is containment, the deeper you are the less you are. -}
 instance Ord Span where
   s1 `compare` s2
     | s1 == s2 = EQ
@@ -27,6 +30,11 @@ instance Ord Span where
 
 isWithin :: Span -> Span -> Bool
 s1 `isWithin` s2 = _offset s1 <= _offset s2 && endOffset s2 <= endOffset s1
+
+isTargetWithin :: Target -> Span -> Bool
+Target { _line = tl, _column = tc }
+  `isTargetWithin` s@(Span { _line = sl, _column = sc }) =
+  tl == sl && sc <= tc && tc <= sc + _length s
 
 isBefore :: Span -> Span -> Bool
 s1 `isBefore` s2 = _offset s1 <= _offset s2 && endOffset s1 <= endOffset s2
