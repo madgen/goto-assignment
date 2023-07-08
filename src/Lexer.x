@@ -1,31 +1,30 @@
 {
+{-# LANGUAGE RecordWildCards #-}
 module Lexer (lex, Token(..)) where
 
 import Prelude hiding (lex)
+import Span(Span(..))
 }
 
-%wrapper "basic"
+%wrapper "posn"
 
 $digit = 0-9            -- digits
 $alpha = [a-zA-Z]       -- alphabetic characters
 
 tokens :-
   $white+                        ;
-  :=                             { \_ -> TAssign }
-  if                             { \_ -> TIf }
-  else                           { \_ -> TElse }
-  while                          { \_ -> TWhile }
-  $digit+                        { \s -> TInt (read s) }
-  \+                             { \_ -> TPlus }
-  \;                             { \_ -> TSemiColon }
-  \{                             { \_ -> TLeftCurly }
-  \}                             { \_ -> TRightCurly }
-  $alpha [$alpha $digit \_ \']*  { \s -> TVar s }
+  :=                             { convert $ \_ _ -> TAssign }
+  if                             { convert $ \_ _ -> TIf }
+  else                           { convert $ \_ _ -> TElse }
+  while                          { convert $ \_ _ -> TWhile }
+  $digit+                        { convert $ \_ s -> TInt (read s) }
+  \+                             { convert $ \_ _ -> TPlus }
+  \;                             { convert $ \_ _ -> TSemiColon }
+  \{                             { convert $ \_ _ -> TLeftCurly }
+  \}                             { convert $ \_ _ -> TRightCurly }
+  $alpha [$alpha $digit \_ \']*  { convert $ \p s -> TVar p s }
 
 {
--- Each action has type :: String -> Token
-
--- The token type:
 data Token
   = TAssign
   | TIf
@@ -35,9 +34,16 @@ data Token
   | TSemiColon
   | TLeftCurly
   | TRightCurly
-  | TVar String
+  | TVar Span String
   | TInt Int
   deriving (Eq, Show)
+
+convert :: (Span -> String -> Token) -> (AlexPosn -> String -> Token)
+convert mk apos str = mk (toSpan apos (length str)) str
+
+toSpan :: AlexPosn -> Int -> Span
+toSpan (AlexPn _ line col) len =
+  Span {_line = line, _column = col, _length = len}
 
 lex = alexScanTokens
 }

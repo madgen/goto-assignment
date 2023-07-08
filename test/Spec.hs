@@ -10,7 +10,7 @@ import           Lexer (lex)
 import           Parser (parse)
 import           AST (Program)
 import           Number (number)
-import           PrettyPrinter (pp)
+import qualified PrettyPrinter as PP
 import           GoToDef (Mode, tabulate, goToDef)
 import           Data.String (lines)
 import           Data.Algorithm.Diff (getGroupedDiff)
@@ -75,7 +75,7 @@ showTestCase path ast = intercalate
   [ "================================================================================"
   , "AST for " <> path
   , "================================================================================"
-  , pp ast]
+  , PP.prettyPrint ast]
 
 showTestOutput :: Mode -> [(Int, [Int])] -> String
 showTestOutput mode goToDefTbl = intercalate "\n"

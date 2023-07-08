@@ -31,6 +31,7 @@ library
       Number
       Parser
       PrettyPrinter
+      Span
   other-modules:
       Paths_go_to_def_ssa
   hs-source-dirs:
