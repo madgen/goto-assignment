@@ -8,9 +8,8 @@ import           System.FilePath ((</>))
 import           System.Exit (exitFailure)
 import           Lexer (lex)
 import           Parser (parse)
-import           AST (Program)
+import           AST (Program, pp)
 import           Number (number)
-import qualified PrettyPrinter as PP
 import           GoToDef (Mode, tabulate, goToDef)
 import           Data.String (lines)
 import           Data.Algorithm.Diff (getGroupedDiff)
@@ -75,7 +74,7 @@ showTestCase path ast = intercalate
   [ "================================================================================"
   , "AST for " <> path
   , "================================================================================"
-  , PP.prettyPrint ast]
+  , AST.pp ast]
 
 showTestOutput :: Mode -> [(Int, [Int])] -> String
 showTestOutput mode goToDefTbl = intercalate "\n"

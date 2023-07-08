@@ -2,7 +2,7 @@ module Main (main) where
 
 import           Prelude hiding (lex)
 import           Data.Foldable (traverse_)
-import qualified PrettyPrinter as PP
+import qualified AST as AST
 import           Lexer (lex)
 import           Parser (parse)
 import           Number (number)
@@ -21,16 +21,16 @@ main = do
     ["parse"] -> do
       contents <- readProgramSTDIN
       putStrLn "\n\nPretty printed parse tree:"
-      putStrLn $ PP.prettyPrint $ parse $ lex contents
+      putStrLn $ AST.pp $ parse $ lex contents
     ["number"] -> do
       contents <- readProgramSTDIN
       putStrLn "\n\nPretty printed parse tree:"
-      putStrLn $ PP.prettyPrint $ number $ parse $ lex contents
+      putStrLn $ AST.pp $ number $ parse $ lex contents
     ["go-to-def", mode] -> do
       contents <- readProgramSTDIN
       putStrLn "\n\nPretty printed parse tree:"
       let ast = number $ parse $ lex contents
-      putStrLn $ PP.prettyPrint ast
+      putStrLn $ AST.pp ast
       putStrLn $ "\n\nGo-to-def (" <> mode <> ") table:"
       traverse_ (\(id1, id2) -> putStrLn $ show id1 <> " -> " <> show id2)
         $ GoToDef.tabulate

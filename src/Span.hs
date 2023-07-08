@@ -1,4 +1,8 @@
-module Span (Span(..)) where
+{-# LANGUAGE RecordWildCards #-}
+
+module Span (Span(..), pp) where
+
+import qualified PrettyPrinter as PP
 
 data Span =
   Span { _offset :: Int, _line :: Int, _column :: Int, _length :: Int }
@@ -24,3 +28,9 @@ s1 `isWithin` s2 = _offset s1 <= _offset s2 && endOffset s2 <= endOffset s1
 
 isBefore :: Span -> Span -> Bool
 s1 `isBefore` s2 = _offset s1 <= _offset s2 && endOffset s1 <= endOffset s2
+
+pp :: Span -> String
+pp = PP.pp 0
+
+instance PP.Pretty Span where
+  pp _ (Span { .. }) = "(" <> show _line <> ":" <> show _column <> ")"
