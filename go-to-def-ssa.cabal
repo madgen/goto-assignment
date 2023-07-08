@@ -28,7 +28,6 @@ library
       AST
       GoToDef
       Lexer
-      Number
       Parser
       PrettyPrinter
       Span
