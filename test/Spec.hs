@@ -9,7 +9,7 @@ import           System.Exit (exitFailure)
 import           AST (Program, pp)
 import           Lexer (lex)
 import           Parser (parse)
-import qualified Span as Span
+import qualified Span
 import           GoToDef (Mode, tabulate, goToDef)
 import           Data.String (lines)
 import           Data.Algorithm.Diff (getGroupedDiff)

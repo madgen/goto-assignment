@@ -2,11 +2,10 @@ module Main (main) where
 
 import           Prelude hiding (lex, id)
 import           Data.Foldable (traverse_)
-import qualified AST as AST
+import qualified AST
 import           Lexer (lex)
 import           Parser (parse)
-import qualified Span as Span
-import           Number (number)
+import qualified Span
 import           System.Environment (getArgs)
 import qualified GoToDef
 import qualified System.IO.Strict as SIO
@@ -23,10 +22,6 @@ main = do
       contents <- readProgramSTDIN
       putStrLn "\n\nPretty printed parse tree:"
       putStrLn $ AST.pp $ parse $ lex contents
-    ["number"] -> do
-      contents <- readProgramSTDIN
-      putStrLn "\n\nPretty printed parse tree:"
-      putStrLn $ AST.pp $ number $ parse $ lex contents
     ["go-to-def", mode] -> do
       contents <- readProgramSTDIN
       putStrLn "\n\nPretty printed parse tree:"
