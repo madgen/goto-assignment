@@ -42,8 +42,8 @@ convert :: (Span -> String -> Token) -> (AlexPosn -> String -> Token)
 convert mk apos str = mk (toSpan apos (length str)) str
 
 toSpan :: AlexPosn -> Int -> Span
-toSpan (AlexPn _ line col) len =
-  Span {_line = line, _column = col, _length = len}
+toSpan (AlexPn offset line col) len =
+  Span {_offset = offset, _line = line, _column = col, _length = len}
 
 lex = alexScanTokens
 }
