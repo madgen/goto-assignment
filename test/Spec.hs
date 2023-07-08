@@ -6,10 +6,10 @@ import           Control.Monad (when)
 import           System.Directory (listDirectory, doesFileExist)
 import           System.FilePath ((</>))
 import           System.Exit (exitFailure)
+import           AST (Program, pp)
 import           Lexer (lex)
 import           Parser (parse)
-import           AST (Program, pp)
-import           Number (number)
+import qualified Span as Span
 import           GoToDef (Mode, tabulate, goToDef)
 import           Data.String (lines)
 import           Data.Algorithm.Diff (getGroupedDiff)
@@ -22,7 +22,7 @@ main = do
   (`traverse_` whileFiles)
     $ \whileFile -> do
       contents <- readFile whileFile
-      let ast = number $ parse $ lex contents
+      let ast = parse $ lex contents
       (`traverse_` [(minBound :: Mode) .. maxBound])
         $ \mode -> do
           let goToDefTbl = GoToDef.tabulate $ GoToDef.goToDef mode ast
@@ -68,7 +68,7 @@ findWhileFiles dir = do
   let whileFiles = filter (".while" `isSuffixOf`) files
   pure (map (dir </>) whileFiles)
 
-showTestCase :: FilePath -> Program Int -> String
+showTestCase :: FilePath -> Program Span.Span -> String
 showTestCase path ast = intercalate
   "\n"
   [ "================================================================================"
@@ -76,12 +76,12 @@ showTestCase path ast = intercalate
   , "================================================================================"
   , AST.pp ast]
 
-showTestOutput :: Mode -> [(Int, [Int])] -> String
+showTestOutput :: Mode -> [(Span.Span, [Span.Span])] -> String
 showTestOutput mode goToDefTbl = intercalate "\n"
   $ [ "================================================================================"
     , "Go-to-Def (" <> show mode <> ")"
     , "================================================================================"]
-  <> map (\(id, ids) -> show id <> " -> " <> show ids) goToDefTbl
+  <> map (\(id, ids) -> Span.pp id <> " -> " <> Span.pps ids) goToDefTbl
 
 replaceExp :: FilePath -> String -> IO ()
 replaceExp expPath expContents = do

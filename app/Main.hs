@@ -1,10 +1,11 @@
 module Main (main) where
 
-import           Prelude hiding (lex)
+import           Prelude hiding (lex, id)
 import           Data.Foldable (traverse_)
 import qualified AST as AST
 import           Lexer (lex)
 import           Parser (parse)
+import qualified Span as Span
 import           Number (number)
 import           System.Environment (getArgs)
 import qualified GoToDef
@@ -29,10 +30,10 @@ main = do
     ["go-to-def", mode] -> do
       contents <- readProgramSTDIN
       putStrLn "\n\nPretty printed parse tree:"
-      let ast = number $ parse $ lex contents
+      let ast = parse $ lex contents
       putStrLn $ AST.pp ast
       putStrLn $ "\n\nGo-to-def (" <> mode <> ") table:"
-      traverse_ (\(id1, id2) -> putStrLn $ show id1 <> " -> " <> show id2)
+      traverse_ (\(id, ids) -> putStrLn $ Span.pp id <> " -> " <> Span.pps ids)
         $ GoToDef.tabulate
         $ GoToDef.goToDef (read mode) ast
     _ -> error "dunno what's happening"

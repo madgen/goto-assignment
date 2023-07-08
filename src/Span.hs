@@ -1,7 +1,9 @@
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE FlexibleInstances #-}
 
-module Span (Span(..), pp) where
+module Span (Span(..), pp, pps) where
 
+import           Data.List (intercalate)
 import qualified PrettyPrinter as PP
 
 data Span =
@@ -31,6 +33,9 @@ s1 `isBefore` s2 = _offset s1 <= _offset s2 && endOffset s1 <= endOffset s2
 
 pp :: Span -> String
 pp = PP.pp 0
+
+pps :: [Span] -> String
+pps spans = "{" <> intercalate "," (pp <$> spans) <> "}"
 
 instance PP.Pretty Span where
   pp _ (Span { .. }) = "(" <> show _line <> ":" <> show _column <> ")"
