@@ -1,11 +1,13 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE NamedFieldPuns #-}
 
-module Span (Span(..), pp, pps, isTargetWithin) where
+module Span (Span(..), pp, pps, toLSPRange, isTargetWithin) where
 
 import           Data.List (intercalate)
 import qualified PrettyPrinter as PP
 import           Target (Target(..))
+import qualified Language.LSP.Protocol.Types as LSP
 
 data Span =
   Span { _offset :: Int, _line :: Int, _column :: Int, _length :: Int }
@@ -47,3 +49,14 @@ pps spans = "{" <> intercalate "," (pp <$> spans) <> "}"
 
 instance PP.Pretty Span where
   pp _ (Span { .. }) = "(" <> show _line <> ":" <> show _column <> ")"
+
+toLSPRange :: Span -> LSP.Range
+toLSPRange (Span { _line, _column, _length }) =
+  LSP.Range { _start = LSP.Position { _line = fromIntegral _line - 1
+                                    , _character = fromIntegral _column - 1
+                                    }
+            , _end = LSP.Position { _line = fromIntegral _line - 1
+                                  , _character =
+                                      fromIntegral $ _column - 1 + _length
+                                  }
+            }

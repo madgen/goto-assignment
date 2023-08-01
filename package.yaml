@@ -25,6 +25,7 @@ dependencies:
 - array
 - transformers
 - strict
+- lsp
   
 build-tools:
 - alex
