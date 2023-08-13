@@ -1,6 +1,6 @@
 {
-  "name": "vscode-go-to-assignment",
-  "displayName": "vscode-go-to-assignment",
+  "name": "vscode-goto-assignment",
+  "displayName": "vscode-goto-assignment",
   "description": "Proof-of-concept for most recent assignment navigation",
   "version": "0.0.1",
   "engines": {

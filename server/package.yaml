@@ -1,6 +1,6 @@
-name:                go-to-assignment
+name:                goto-assignment
 version:             0.1.0.0
-github:              "madgen/go-to-assignment"
+github:              "madgen/goto-assignment"
 license:             BSD3
 author:              "Mistral Contrastin"
 maintainer:          "madgenhetic@gmail.com"
@@ -8,7 +8,6 @@ copyright:           "Copyright (c) 2023 Mistral Contrastin"
 
 extra-source-files:
 - README.md
-- CHANGELOG.md
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
@@ -17,7 +16,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/madgen/go-to-assignment#readme>
+description:         Please see the README on GitHub at <https://github.com/madgen/goto-assignment#readme>
 
 dependencies:
 - base >= 4.7 && < 5
@@ -46,7 +45,7 @@ library:
   source-dirs: src
 
 executables:
-  go-to-assignment-exe:
+  goto-assignment-exe:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
@@ -54,10 +53,10 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - go-to-assignment
+    - goto-assignment
 
 tests:
-  go-to-def-assignment:
+  goto-assignment:
     main:                Spec.hs
     source-dirs:         test
     ghc-options:
@@ -65,7 +64,7 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - go-to-def-ssa
+    - goto-assignment
     - filepath
     - directory
     - Diff

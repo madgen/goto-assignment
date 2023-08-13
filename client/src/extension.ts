@@ -19,13 +19,13 @@ let outputChannel: vscode.OutputChannel;
 export function activate(context: vscode.ExtensionContext) {
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	outputChannel = vscode.window.createOutputChannel('Go-to-Assignment');
+	outputChannel = vscode.window.createOutputChannel('Goto-Assignment');
 	outputChannel.show(true);
-	outputChannel.appendLine('Activating "vscode-go-to-assignment"...');
+	outputChannel.appendLine('Activating "vscode-goto-assignment"...');
 
 	let stdout: Buffer;
 	try {
-		stdout = execSync(`find ${__dirname}/../../server -iname go-to-assignment-exe -type file | tail -n1`);
+		stdout = execSync(`find ${__dirname}/../../server -iname goto-assignment-exe -type file | tail -n1`);
 	} catch {
 		outputChannel.appendLine("There was a problem finding the LSP server executable.");
 		return;
@@ -54,8 +54,8 @@ export function activate(context: vscode.ExtensionContext) {
 	};
 
 	client = new LanguageClient(
-		'vscode-go-to-assignment',
-		'Go-to-Assignment',
+		'vscode-goto-assignment',
+		'Goto-Assignment',
 		serverOptions,
 		clientOptions
 	);

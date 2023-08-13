@@ -34,7 +34,7 @@ main = do
       contents <- readProgramSTDIN
       putStrLn "\n\nPretty printed parse tree:"
       putStrLn $ AST.pp $ parse $ lex contents
-    ["go-to-def", mode] -> do
+    ["goto-def", mode] -> do
       contents <- readProgramSTDIN
       putStrLn "\n\nPretty printed parse tree:"
       let ast = parse $ lex contents
