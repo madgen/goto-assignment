@@ -2,8 +2,11 @@
 
 This is the proof-of-concept implementation of Go to Assignment code navigation
 to go with [the associated blog
-post](https://dodisturb.me/2023-08-09-Goto-Assignment.html). It comes with an
+post](https://dodisturb.me/2023-08-24-Goto-Assignment.html). It comes with an
 LSP server implementation under `server` and a VSCode extension under `client`.
+
+Here's the extension in action:
+![Goto Assignment extension demo](demo.gif)
 
 To run the demo,
 1. run `stack build` under the `server` directory
